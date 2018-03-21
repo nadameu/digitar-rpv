@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "javascript.format.enable": false,
+  "prettier.eslintIntegration": true,
+  "prettier.typescriptEnable": ["typescript", "typescriptreact"],
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5"
+}
