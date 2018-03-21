@@ -13,13 +13,17 @@ const criarElemento = (valor: number) => ({
 
 describe('preencherFormulario', () => {
   it('calcula o valor corretamente', () => {
-    const referencia = random(500, 1500);
-    const total = random(0.5, 1.5, rand => rand * referencia.valueOf());
-    const a = random(0.25, 0.75, rand => rand * total.valueOf());
-    const b = criarElemento(total.valueOf() - a.valueOf());
-    const c = criarElemento(0);
-    const d = criarElemento(0);
-    preencherFormulario(referencia, [a, b], [c, d]);
-    // expect(c.valueOf() + d.valueOf()).toBe(referencia.valueOf());
+    for (let i = 0; i < 100; i++) {
+      const referencia = random(500, 1500);
+      const total = random(0.5, 1.5, rand => rand * referencia.valueOf());
+      const a = random(0.25, 0.75, rand => rand * total.valueOf());
+      const b = criarElemento(total.valueOf() - a.valueOf());
+      const c = criarElemento(0);
+      const d = criarElemento(0);
+      preencherFormulario(referencia, [a, b], [c, d]);
+      const valorC = arredondarMoeda(c.valueOf());
+      const valorD = arredondarMoeda(d.valueOf());
+      expect(arredondarMoeda(valorC + valorD)).toBe(referencia.valueOf());
+    }
   });
 });
