@@ -1,88 +1,72 @@
 {
-  "name": "digitar-rpv",
-  "version": "1.0.0",
-  "description": "Digitar ofício requisitório",
-  "main": "src/index.ts",
-  "userscript": {
-    "namespace": "http://nadameu.com.br/",
-    "include": [
-      "/^https:\\/\\/eproc\\.(jf(pr|rs|sc)|trf4)\\.jus\\.br\\/eproc(V2|2trf4)\\/controlador\\.php\\?acao=oficio_requisitorio_beneficiarioshonorarios_editar&/"
-    ],
-    "grant": "none",
-    "run-at": "document-start"
-  },
-  "scripts": {
-    "build": "webpack --env.production --mode production",
-    "build:dev": "webpack --env.development --mode development",
-    "flow": "flow",
-    "flow-typed": "flow-typed",
-    "serve": "webpack-dev-server --env.development --mode development --open",
-    "start": "npm run build:dev && npm run serve",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nadameu/digitar-rpv.git"
-  },
-  "author": "nadameu",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/nadameu/digitar-rpv/issues"
-  },
-  "browserlist": [
-    "last 2 Chrome versions",
-    "Firefox 38"
-  ],
-  "homepage": "https://github.com/nadameu/digitar-rpv#readme",
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
-  },
-  "devDependencies": {
-    "@types/intl": "^1.2.0",
-    "@types/jest": "^22.2.0",
-    "@types/jquery": "^3.3.1",
-    "@types/node": "^9.4.7",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.2",
-    "babel-jest": "^22.4.3",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-flow": "^6.23.0",
-    "clean-webpack-plugin": "^0.1.19",
-    "css-loader": "^0.28.10",
-    "css-module-flow": "^1.0.0",
-    "flow-bin": "^0.68.0",
-    "flow-typed": "^2.4.0",
-    "jest": "^22.4.2",
-    "node-sass": "^4.7.2",
-    "prettier-eslint": "^8.8.1",
-    "raw-loader": "^0.5.1",
-    "sass-loader": "^6.0.7",
-    "style-loader": "^0.20.3",
-    "ts-jest": "^22.4.2",
-    "ts-loader": "^4.1.0",
-    "uglifyjs-webpack-plugin": "^1.2.2",
-    "userscript-meta": "^1.0.1",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.10",
-    "webpack-dev-server": "^3.1.0"
-  },
-  "dependencies": {
-    "intl": "^1.2.5",
-    "intl-locales-supported": "^1.0.0"
-  }
+	"name": "digitar-rpv",
+	"version": "1.0.0",
+	"description": "Digitar ofício requisitório",
+	"main": "src/index.ts",
+	"userscript": {
+		"namespace": "http://nadameu.com.br/",
+		"include": [
+			"/^https:\\/\\/eproc\\.(jf(pr|rs|sc)|trf4)\\.jus\\.br\\/eproc(V2|2trf4)\\/controlador\\.php\\?acao=oficio_requisitorio_beneficiarioshonorarios_editar&/"
+		],
+		"grant": "none",
+		"run-at": "document-start"
+	},
+	"scripts": {
+		"build": "webpack --env.production --mode production",
+		"build:dev": "webpack --env.development --mode development",
+		"serve": "webpack-dev-server --env.development --mode development --open",
+		"start": "npm run build:dev && npm run serve",
+		"test": "jest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nadameu/digitar-rpv.git"
+	},
+	"author": "nadameu",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/nadameu/digitar-rpv/issues"
+	},
+	"browserlist": [
+		"last 2 Chrome versions",
+		"Firefox 38"
+	],
+	"homepage": "https://github.com/nadameu/digitar-rpv#readme",
+	"jest": {
+		"transform": {
+			"^.+\\.tsx?$": "ts-jest",
+			"^.+\\.jsx?$": "babel-jest"
+		},
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"jsx",
+			"json",
+			"node"
+		]
+	},
+	"devDependencies": {
+		"@types/intl": "^1.2.0",
+		"@types/jest": "^22.2.0",
+		"@types/node": "^9.4.7",
+		"clean-webpack-plugin": "^0.1.19",
+		"css-loader": "^0.28.11",
+		"jest": "^22.4.3",
+		"node-sass": "^4.7.2",
+		"raw-loader": "^0.5.1",
+		"sass-loader": "^6.0.7",
+		"style-loader": "^0.20.3",
+		"ts-jest": "^22.4.2",
+		"ts-loader": "^4.1.0",
+		"typescript": "^2.7.2",
+		"userscript-meta": "^1.0.1",
+		"webpack": "^4.2.0",
+		"webpack-cli": "^2.0.12",
+		"webpack-dev-server": "^3.1.1"
+	},
+	"dependencies": {
+		"intl": "^1.2.5"
+	}
 }

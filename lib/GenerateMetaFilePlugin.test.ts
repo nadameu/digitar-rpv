@@ -13,6 +13,7 @@ describe('GenerateMetaFilePlugin', () => {
 	});
 
 	it('Falha se não receber a opção "metadata"', () => {
+		//@ts-ignore
 		expect(() => new GenerateMetaFilePlugin()).toThrow();
 		expect(() => new GenerateMetaFilePlugin({})).toThrow();
 		expect(
@@ -21,6 +22,7 @@ describe('GenerateMetaFilePlugin', () => {
 	});
 
 	it('Falha se não receber a opção "filename"', () => {
+		//@ts-ignore
 		expect(() => new GenerateMetaFilePlugin()).toThrow();
 		expect(() => new GenerateMetaFilePlugin({})).toThrow();
 		expect(
@@ -47,7 +49,7 @@ describe('GenerateMetaFilePlugin', () => {
 		};
 		const expected = '// ==UserScript==\n// @name test\n// ==/UserScript==\n';
 		const plugin = new GenerateMetaFilePlugin(options);
-		const compilation = { assets: {} };
+		const compilation: { assets: { [filename: string]: any } } = { assets: {} };
 		const callback = () => {
 			const addedAsset = compilation.assets[options.filename];
 			expect(addedAsset).not.toBeUndefined();
@@ -56,7 +58,7 @@ describe('GenerateMetaFilePlugin', () => {
 			expect(size()).toBe(expected.length);
 		};
 		const compiler = {
-			plugin(hook, fn) {
+			plugin(hook: string, fn: Function) {
 				expect(hook).toBe('emit');
 				expect(typeof fn).toBe('function');
 				fn(compilation, callback);

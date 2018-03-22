@@ -1,13 +1,12 @@
-/* global __dirname */
+//@ts-nocheck
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const UserscriptMeta = require('userscript-meta');
+const webpack = require('webpack');
 
-import CleanWebpackPlugin from 'clean-webpack-plugin';
-import path from 'path';
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
-import UserscriptMeta from 'userscript-meta';
-import webpack from 'webpack';
-
-import pkg from './package.json';
-import GenerateMetaFilePlugin from './lib/GenerateMetaFilePlugin';
+const pkg = require('./package.json');
+const GenerateMetaFilePlugin = require('./lib/GenerateMetaFilePlugin');
 
 const getMetadata = () => {
 	const { name, description, version, author, userscript } = pkg;
@@ -18,16 +17,13 @@ const defaultConfig = {
 	entry: path.resolve(__dirname, pkg.main),
 	module: {
 		rules: [
-			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
-			{ test: /\.ts$/, exclude: /node_modules/, loader: 'ts-loader' },
+			{ test: /\.tsx?$/, loader: 'ts-loader' },
 			{
-				test: /\.scss$/,
-				exclude: /node_modules/,
+				test: /\.s?css$/,
 				loader: ['style-loader', 'css-loader', 'sass-loader'],
 			},
 			{
 				test: /\.html$/,
-				exclude: /node_modules/,
 				loader: ['raw-loader'],
 			},
 		],
@@ -70,4 +66,4 @@ const prodConfig = Object.assign({}, defaultConfig, {
 
 const config = (env = {}) => (env.production ? prodConfig : devConfig);
 
-export default config;
+module.exports = config;
