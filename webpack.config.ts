@@ -1,30 +1,29 @@
-//@ts-nocheck
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const UserscriptMeta = require('userscript-meta');
-const webpack = require('webpack');
+import CleanWebpackPlugin from 'clean-webpack-plugin';
+import path from 'path';
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import UserscriptMeta from 'userscript-meta';
+import webpack from 'webpack';
 
-const pkg = require('./package.json');
-const GenerateMetaFilePlugin = require('./lib/GenerateMetaFilePlugin');
+import pkg from './package.json';
+import GenerateMetaFilePlugin from './lib/GenerateMetaFilePlugin';
 
 const getMetadata = () => {
 	const { name, description, version, author, userscript } = pkg;
 	return Object.assign({ name, description, version, author }, userscript);
 };
 
-const defaultConfig = {
+const defaultConfig: webpack.Configuration = {
 	entry: path.resolve(__dirname, pkg.main),
 	module: {
 		rules: [
 			{ test: /\.tsx?$/, loader: 'ts-loader' },
 			{
 				test: /\.s?css$/,
-				loader: ['style-loader', 'css-loader', 'sass-loader'],
+				use: ['style-loader', 'css-loader', 'sass-loader'],
 			},
 			{
 				test: /\.html$/,
-				loader: ['raw-loader'],
+				use: ['raw-loader'],
 			},
 		],
 	},
@@ -46,13 +45,13 @@ const defaultConfig = {
 	resolve: { extensions: ['.js', '.ts'] },
 };
 
-const devConfig = Object.assign({}, defaultConfig, {
+const devConfig: webpack.Configuration = Object.assign({}, defaultConfig, {
 	devServer: {
 		contentBase: './dist',
 	},
 });
 
-const prodConfig = Object.assign({}, defaultConfig, {
+const prodConfig: webpack.Configuration = Object.assign({}, defaultConfig, {
 	plugins: [
 		new CleanWebpackPlugin(['dist']),
 		new UglifyJsPlugin({}),
@@ -64,6 +63,10 @@ const prodConfig = Object.assign({}, defaultConfig, {
 	],
 });
 
-const config = (env = {}) => (env.production ? prodConfig : devConfig);
+interface Env {
+	development?: boolean;
+	production?: boolean;
+}
+const config = (env: Env = {}) => (env.production ? prodConfig : devConfig);
 
-module.exports = config;
+export default config;

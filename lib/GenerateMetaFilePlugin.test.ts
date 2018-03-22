@@ -12,34 +12,6 @@ describe('GenerateMetaFilePlugin', () => {
 		expect(typeof GenerateMetaFilePlugin.prototype.apply).toBe('function');
 	});
 
-	it('Falha se não receber a opção "metadata"', () => {
-		//@ts-ignore
-		expect(() => new GenerateMetaFilePlugin()).toThrow();
-		expect(() => new GenerateMetaFilePlugin({})).toThrow();
-		expect(
-			() => new GenerateMetaFilePlugin({ filename: 'test.user.js' })
-		).toThrow();
-	});
-
-	it('Falha se não receber a opção "filename"', () => {
-		//@ts-ignore
-		expect(() => new GenerateMetaFilePlugin()).toThrow();
-		expect(() => new GenerateMetaFilePlugin({})).toThrow();
-		expect(
-			() => new GenerateMetaFilePlugin({ metadata: { name: 'test' } })
-		).toThrow();
-	});
-
-	it('Falha se a opção "filename" não for uma string', () => {
-		expect(
-			() =>
-				new GenerateMetaFilePlugin({
-					metadata: { name: 'test' },
-					filename: ['invalid array'],
-				})
-		).toThrow();
-	});
-
 	it('Adiciona um plugin à fase de emissão do webpack', () => {
 		const options = {
 			filename: 'test.meta.js',
@@ -49,19 +21,21 @@ describe('GenerateMetaFilePlugin', () => {
 		};
 		const expected = '// ==UserScript==\n// @name test\n// ==/UserScript==\n';
 		const plugin = new GenerateMetaFilePlugin(options);
-		const compilation: { assets: { [filename: string]: any } } = { assets: {} };
-		const callback = () => {
-			const addedAsset = compilation.assets[options.filename];
-			expect(addedAsset).not.toBeUndefined();
-			const { source, size } = addedAsset;
-			expect(source()).toBe(expected);
-			expect(size()).toBe(expected.length);
-		};
-		const compiler = {
-			plugin(hook: string, fn: Function) {
-				expect(hook).toBe('emit');
-				expect(typeof fn).toBe('function');
-				fn(compilation, callback);
+		const compilation: Compilation = { assets: {} };
+		const compiler: Compiler = {
+			hooks: {
+				emit: {
+					tap(pluginName: string, fn: Function) {
+						expect(pluginName).toBe('GenerateMetaFilePlugin');
+						expect(typeof fn).toBe('function');
+						fn(compilation);
+						const addedAsset = compilation.assets[options.filename];
+						expect(addedAsset).not.toBeUndefined();
+						const { source, size } = addedAsset;
+						expect(source()).toBe(expected);
+						expect(size()).toBe(expected.length);
+					},
+				},
 			},
 		};
 		plugin.apply(compiler);

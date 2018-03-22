@@ -1,4 +1,3 @@
-//@ts-ignore
 import formulario from './formulario.html';
 import vincularSoma from './vincularSoma';
 import preencherFormulario from './preencherFormulario';
