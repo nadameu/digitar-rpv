@@ -1,13 +1,13 @@
 interface HasTabIndex extends Element {
-  tabIndex: number;
+	tabIndex: number;
 }
 
 export default function limparTabIndexFactory(doc: Document) {
-  return () => {
-    Array.from(doc.querySelectorAll('[tabindex]') as NodeListOf<
-      HasTabIndex
-    >).forEach(el => {
-      el.tabIndex = 0;
-    });
-  };
+	return () => {
+		Array.from(doc.querySelectorAll('[tabindex]') as NodeListOf<
+			HasTabIndex
+		>).forEach(el => {
+			el.tabIndex = 0;
+		});
+	};
 }

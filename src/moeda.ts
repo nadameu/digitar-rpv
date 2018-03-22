@@ -1,28 +1,28 @@
 import IntlPolyfill from 'intl';
 if (!process.env.production) {
-  global.Intl = IntlPolyfill;
+	global.Intl = IntlPolyfill;
 }
 
 export function parseMoeda(texto: string) {
-  return Number(
-    String(texto)
-      .replace(/\./g, '')
-      .replace(',', '.')
-  );
+	return Number(
+		String(texto)
+			.replace(/\./g, '')
+			.replace(',', '.')
+	);
 }
 
 export function arredondarMoeda(valor: number) {
-  return Math.round(Number(valor) * 100) / 100;
+	return Math.round(Number(valor) * 100) / 100;
 }
 
 const formatador = Intl.NumberFormat('pt-BR', {
-  style: 'decimal',
-  useGrouping: true,
-  minimumIntegerDigits: 1,
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+	style: 'decimal',
+	useGrouping: true,
+	minimumIntegerDigits: 1,
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
 });
 
 export function formatarMoeda(valor: number) {
-  return formatador.format(valor);
+	return formatador.format(valor);
 }
