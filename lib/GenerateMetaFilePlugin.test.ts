@@ -1,3 +1,4 @@
+import webpack from 'webpack';
 import GenerateMetaFilePlugin from './GenerateMetaFilePlugin';
 
 describe('GenerateMetaFilePlugin', () => {
@@ -21,14 +22,16 @@ describe('GenerateMetaFilePlugin', () => {
 		};
 		const expected = '// ==UserScript==\n// @name test\n// ==/UserScript==\n';
 		const plugin = new GenerateMetaFilePlugin(options);
-		const compilation: Compilation = { assets: {} };
-		const compiler: Compiler = {
+		const compilation: Partial<webpack.compilation.Compilation> = {
+			assets: {},
+		};
+		const compiler: { hooks: { emit: { tap: (name: string, fn: (compilation: webpack.compilation.Compilation) => any) => any } } } = {
 			hooks: {
 				emit: {
-					tap(pluginName: string, fn: Function) {
-						expect(pluginName).toBe('GenerateMetaFilePlugin');
+					tap(name, fn) {
+						expect(name).toBe('GenerateMetaFilePlugin');
 						expect(typeof fn).toBe('function');
-						fn(compilation);
+						fn(compilation as webpack.compilation.Compilation);
 						const addedAsset = compilation.assets[options.filename];
 						expect(addedAsset).not.toBeUndefined();
 						const { source, size } = addedAsset;
@@ -38,6 +41,6 @@ describe('GenerateMetaFilePlugin', () => {
 				},
 			},
 		};
-		plugin.apply(compiler);
+		plugin.apply(compiler as webpack.Compiler);
 	});
 });
