@@ -27,10 +27,7 @@
 	"bugs": {
 		"url": "https://github.com/nadameu/digitar-rpv/issues"
 	},
-	"browserlist": [
-		"last 2 Chrome versions",
-		"Firefox 38"
-	],
+	"browserlist": ["last 2 Chrome versions", "Firefox 38"],
 	"homepage": "https://github.com/nadameu/digitar-rpv#readme",
 	"jest": {
 		"transform": {
@@ -38,14 +35,7 @@
 			"^.+\\.jsx?$": "babel-jest"
 		},
 		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"jsx",
-			"json",
-			"node"
-		]
+		"moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
 	},
 	"devDependencies": {
 		"@types/intl": "^1.2.0",
