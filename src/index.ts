@@ -9,7 +9,7 @@ const limparTabIndex = limparTabIndexFactory(document);
 const obterElementos = obterElementosFactory(document);
 const tentarAteEncontrar = tentarAteEncontrarFactory(obterElementos);
 const tentarAteEncontrarComValor = tentarAteEncontrarComValorFactory(
-	obterElementos
+	tentarAteEncontrar
 );
 
 const app = appFactory(
@@ -17,4 +17,5 @@ const app = appFactory(
 	tentarAteEncontrar,
 	tentarAteEncontrarComValor
 );
+
 app().catch(e => console.error(e));

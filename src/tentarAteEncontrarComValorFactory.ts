@@ -1,9 +1,6 @@
-import tentarAteEncontrarFactory from './tentarAteEncontrarFactory';
-
 const tentarAteEncontrarComValorFactory = (
-	obterElementos: (ids: string[]) => Promise<HTMLElement[]>
+	tentarAteEncontrar: (ids: string[]) => Promise<HTMLElement[]>
 ) => {
-	const tentarAteEncontrar = tentarAteEncontrarFactory(obterElementos);
 	return (ids: string[]): Promise<HasValue[]> =>
 		new Promise(resolve => {
 			(tentarAteEncontrar(ids) as Promise<HasValue[]>).then(
