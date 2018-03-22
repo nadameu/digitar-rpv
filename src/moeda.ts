@@ -1,6 +1,8 @@
-import IntlPolyfill from 'intl';
-if (!process.env.production) {
-	global.Intl = IntlPolyfill;
+import isNode from 'detect-node';
+import intl from 'intl';
+
+if (isNode) {
+	global.Intl = intl;
 }
 
 export function parseMoeda(texto: string) {

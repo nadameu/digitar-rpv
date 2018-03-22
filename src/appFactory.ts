@@ -25,10 +25,10 @@ const appFactory = (
 	return tentarAteEncontrar(divs).then(([div]) => {
 		div.insertAdjacentHTML('beforeend', formulario);
 		return Promise.all([
-			tentarAteEncontrar(buttons) as Promise<HTMLButtonElement[]>,
-			tentarAteEncontrarComValor(inputs) as Promise<HTMLInputElement[]>,
+			tentarAteEncontrar(buttons),
+			tentarAteEncontrarComValor(inputs),
 		]).then(([buttons, inputs]) => {
-			const [aplicar] = buttons;
+			const [aplicar] = buttons as HTMLButtonElement[];
 			const [
 				inputBrutoTotal,
 				inputBrutoPrincipal,
@@ -40,7 +40,7 @@ const appFactory = (
 				inputJuros,
 				inputCorrente,
 				inputAnterior,
-			] = inputs;
+			] = inputs as HTMLInputElement[];
 			limparTabIndex();
 			vincularSoma(inputBrutoPrincipal, inputBrutoJuros, inputBrutoTotal);
 			vincularSoma(inputPrincipal, inputJuros, inputTotal);

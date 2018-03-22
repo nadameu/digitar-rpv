@@ -1,3 +1,7 @@
+declare module 'detect-node' {
+	const isNode: boolean;
+	export default isNode;
+}
 declare module 'uglifyjs-webpack-plugin';
 declare module 'userscript-meta';
 
