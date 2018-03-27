@@ -1,5 +1,5 @@
 import isNode from 'detect-node';
-import intl from 'intl';
+import * as intl from 'intl';
 
 if (isNode) {
 	global.Intl = intl;

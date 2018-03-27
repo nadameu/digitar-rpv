@@ -16,7 +16,11 @@ const defaultConfig: webpack.Configuration = {
 	entry: path.resolve(__dirname, pkg.main),
 	module: {
 		rules: [
-			{ test: /\.tsx?$/, loader: 'ts-loader' },
+			{
+				test: /\.(tsx?)|(js)$/,
+				exclude: /node_modules/,
+				loader: 'babel-loader',
+			},
 			{
 				test: /\.s?css$/,
 				use: ['style-loader', 'css-loader', 'sass-loader'],
@@ -42,7 +46,7 @@ const defaultConfig: webpack.Configuration = {
 			entryOnly: true,
 		}),
 	],
-	resolve: { extensions: ['.js', '.ts'] },
+	resolve: { extensions: ['.ts', '.js', '.json'] },
 };
 
 const devConfig: webpack.Configuration = Object.assign({}, defaultConfig, {

@@ -25,7 +25,16 @@ describe('GenerateMetaFilePlugin', () => {
 		const compilation: Partial<webpack.compilation.Compilation> = {
 			assets: {},
 		};
-		const compiler: { hooks: { emit: { tap: (name: string, fn: (compilation: webpack.compilation.Compilation) => any) => any } } } = {
+		const compiler: {
+			hooks: {
+				emit: {
+					tap: (
+						name: string,
+						fn: (compilation: webpack.compilation.Compilation) => any
+					) => any;
+				};
+			};
+		} = {
 			hooks: {
 				emit: {
 					tap(name, fn) {
