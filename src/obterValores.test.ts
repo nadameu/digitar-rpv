@@ -1,3 +1,4 @@
+import './intl';
 import { formatarMoeda } from './moeda';
 import obterValores from './obterValores';
 
