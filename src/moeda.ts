@@ -1,10 +1,3 @@
-import isNode from 'detect-node';
-import IntlPolyfill from 'intl';
-
-if (isNode) {
-	global.Intl = IntlPolyfill;
-}
-
 export function parseMoeda(texto: string) {
 	return Number(
 		String(texto)

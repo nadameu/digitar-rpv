@@ -1,3 +1,4 @@
+import './intl';
 import { arredondarMoeda, formatarMoeda, parseMoeda } from './moeda';
 
 describe('arredondarMoeda', () => {
