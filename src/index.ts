@@ -1,4 +1,4 @@
-import './estilos.scss';
+import './estilos.css';
 
 import appFactory from './appFactory';
 import limparTabIndexFactory from './limparTabIndexFactory';

@@ -3,7 +3,7 @@ declare module '*.html' {
 	export default html;
 }
 
-declare module '*.json' {
-	const data: any;
-	export default data;
+declare module '*.css' {
+	const css: string;
+	export default css;
 }
