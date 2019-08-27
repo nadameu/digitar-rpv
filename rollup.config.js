@@ -10,9 +10,7 @@ import pkg from './package.json';
 import serve from 'rollup-plugin-serve';
 import postcss from 'rollup-plugin-postcss';
 
-import typescript from 'rollup-plugin-typescript2';
-
-const extensions = ['.js', '.jsx'];
+const extensions = ['.js', '.ts'];
 
 export default {
 	input: './src/index.ts',
@@ -41,9 +39,6 @@ export default {
 					},
 					toplevel: true,
 			  }),
-		typescript({
-			tsconfig: 'tsconfig-rollup.json',
-		}),
 		// Compile TypeScript/JavaScript files
 		babel({ extensions, include: ['src/**/*'] }),
 
