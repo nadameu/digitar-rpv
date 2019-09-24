@@ -1,4 +1,4 @@
-import { arredondarMoeda, formatarMoeda, parseMoeda } from './moeda';
+import { arredondarMoeda, formatarMoeda, parseMoeda, splitEnd } from './moeda';
 
 describe('arredondarMoeda', () => {
 	it('Funciona', () => {
@@ -53,4 +53,13 @@ describe('parseMoeda', () => {
 	it('Retorna NaN para valores inválidos', () => {
 		expect(parseMoeda('texto')).toBe(NaN);
 	});
+});
+
+test('splitEnd', () => {
+	expect(splitEnd('abc', -1)).toEqual(['abc', '']);
+	expect(splitEnd('abc', 0)).toEqual(['abc', '']);
+	expect(splitEnd('abc', 1)).toEqual(['ab', 'c']);
+	expect(splitEnd('abc', 2)).toEqual(['a', 'bc']);
+	expect(splitEnd('abc', 3)).toEqual(['', 'abc']);
+	expect(splitEnd('abc', 4)).toEqual(['', 'abc']);
 });
