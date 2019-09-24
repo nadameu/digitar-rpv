@@ -1,4 +1,3 @@
-import './intl';
 import { arredondarMoeda, formatarMoeda, parseMoeda } from './moeda';
 import preencherFormulario from './preencherFormulario';
 
