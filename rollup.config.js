@@ -15,50 +15,48 @@ const extensions = ['.js', '.ts'];
 export default {
 	input: './src/index.ts',
 
-	// Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
-	// https://rollupjs.org/guide/en#external-e-external
 	external: [],
 
 	plugins: [
-		// Allows node_modules resolution
 		resolve({ extensions }),
 
-		// Allow bundling cjs modules. Rollup doesn't understand cjs
 		commonjs(),
 
-		process.env.BUILD === 'development'
-			? null
-			: terser({
-					ecma: 8,
-					compress: {
-						passes: 3,
-						unsafe_arrows: true,
-					},
-					output: {
-						preamble: generateBanner(),
-					},
-					toplevel: true,
-			  }),
-		// Compile TypeScript/JavaScript files
+		process.env.BUILD !== 'development' &&
+			process.env.BUILD !== 'serve' &&
+			terser({
+				ecma: 8,
+				compress: {
+					passes: 5,
+					unsafe_arrows: true,
+				},
+				output: {
+					preamble: generateBanner(),
+				},
+				toplevel: true,
+			}),
+
 		babel({ extensions, include: ['src/**/*'] }),
 
 		string({
 			include: ['**/*.html'],
 		}),
 
-		process.env.BUILD === 'development'
-			? serve({
-					open: true,
-					openPage: `/${pkg.name}.user.js`,
-					contentBase: 'dist',
-			  })
-			: null,
+		process.env.BUILD === 'serve' &&
+			serve({
+				open: true,
+				openPage: `/${pkg.name}.user.js`,
+				contentBase: 'dist',
+			}),
 		postcss(),
 	],
 
 	output: [
 		{
-			banner: process.env.BUILD === 'development' ? generateBanner() : null,
+			banner:
+				(process.env.BUILD === 'development' ||
+					process.env.BUILD === 'serve') &&
+				generateBanner(),
 			file: path.resolve(__dirname, 'dist', `${pkg.name}.user.js`),
 			format: 'es',
 		},
@@ -69,8 +67,8 @@ function generateBanner() {
 	const { name, version, description, author } = pkg;
 	return stringify({
 		name,
+		...(description ? { 'name:pt-BR': description } : {}),
 		version,
-		...(description ? { description } : {}),
 		author,
 		...data,
 	});

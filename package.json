@@ -2,24 +2,18 @@
 	"name": "digitar-rpv",
 	"version": "1.0.0",
 	"description": "Digitar ofício requisitório",
-	"homepage": "https://github.com/nadameu/digitar-rpv#readme",
-	"bugs": {
-		"url": "https://github.com/nadameu/digitar-rpv/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/nadameu/digitar-rpv.git"
-	},
+	"repository": "github:nadameu/digitar-rpv",
 	"license": "GPL-3.0",
 	"author": "nadameu",
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"browser": "dist/browser/index.js",
 	"scripts": {
+		"prebuild": "rimraf ./.rpt2_cache/ ./dist",
 		"build": "rollup -c",
-		"build:dev": "rollup -c -w --environment BUILD:development",
+		"build:dev": "npm run build -- --environment BUILD:development",
+		"build:serve": "npm run build -- --environment BUILD:serve --watch",
+		"build:watch": "npm run build:dev -- --watch",
+		"start": "npm run build:serve",
 		"test": "jest",
-		"type-check": "tsc --noEmit",
+		"type-check": "tsc",
 		"type-check:watch": "npm run type-check -- --watch"
 	},
 	"dependencies": {
@@ -37,6 +31,7 @@
 		"@types/jest": "^24.0.18",
 		"jest": "^24.9.0",
 		"prettier": "^1.18.2",
+		"rimraf": "^3.0.0",
 		"rollup": "^1.20.2",
 		"rollup-plugin-babel": "^4.3.3",
 		"rollup-plugin-commonjs": "^10.1.0",
