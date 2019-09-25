@@ -1,22 +1,32 @@
-import './estilos.css';
+import { telaBeneficiarios } from './telas/beneficiarios';
+import { telaPrincipal } from './telas/principal';
+import { telaReembolsos } from './telas/reembolsos';
 
-import appFactory from './appFactory';
-import limparTabIndexFactory from './limparTabIndexFactory';
-import obterElementosFactory from './obterElementosFactory';
-import tentarAteEncontrarComValorFactory from './tentarAteEncontrarComValorFactory';
-import tentarAteEncontrarFactory from './tentarAteEncontrarFactory';
+const main = async () => {
+	const acao = new URL(document.location.href).searchParams.get('acao');
+	switch (acao) {
+		case 'oficio_requisitorio_requisicoes_editar':
+			// Tela principal
+			return telaPrincipal();
 
-const limparTabIndex = limparTabIndexFactory(document);
-const obterElementos = obterElementosFactory(document);
-const tentarAteEncontrar = tentarAteEncontrarFactory(obterElementos);
-const tentarAteEncontrarComValor = tentarAteEncontrarComValorFactory(
-	tentarAteEncontrar
-);
+		case 'oficio_requisitorio_beneficiarioshonorarios_editar':
+			// Edição de beneficiário ou honorário
+			return telaBeneficiarios();
 
-const app = appFactory(
-	limparTabIndex,
-	tentarAteEncontrar,
-	tentarAteEncontrarComValor
-);
+		case 'oficio_requisitorio_reembdeducoes_editar':
+			// Edição de reembolsos ou deduções
+			return telaReembolsos();
 
-app().catch(e => console.error(e));
+		default:
+			return Promise.reject(new Error(`Ação desconhecida: ${acao}`));
+	}
+};
+
+console.group('Digitar RPV');
+main()
+	.catch(error => {
+		console.error(error);
+	})
+	.then(() => {
+		console.groupEnd();
+	});
