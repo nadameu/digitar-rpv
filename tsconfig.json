@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"target": "es2018",
 		"esModuleInterop": true,
 		"noEmit": true,
 		"strict": true

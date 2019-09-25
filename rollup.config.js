@@ -1,16 +1,16 @@
 import path from 'path';
-import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
-import resolve from 'rollup-plugin-node-resolve';
+import postcss from 'rollup-plugin-postcss';
+import serve from 'rollup-plugin-serve';
 import { string } from 'rollup-plugin-string';
 import { terser } from 'rollup-plugin-terser';
+import typescript from 'rollup-plugin-typescript';
 import { stringify } from 'userscript-meta';
 import data from './metadata';
 import pkg from './package.json';
-import serve from 'rollup-plugin-serve';
-import postcss from 'rollup-plugin-postcss';
 
-const extensions = ['.js', '.ts'];
+const IS_SERVE = process.env.BUILD === 'serve';
+const IS_DEVELOPMENT = IS_SERVE || process.env.BUILD === 'development';
+const IS_PRODUCTION = !IS_DEVELOPMENT;
 
 export default {
 	input: './src/index.ts',
@@ -18,31 +18,26 @@ export default {
 	external: [],
 
 	plugins: [
-		resolve({ extensions }),
+		typescript(),
 
-		commonjs(),
-
-		process.env.BUILD !== 'development' &&
-			process.env.BUILD !== 'serve' &&
-			terser({
-				ecma: 8,
-				compress: {
-					passes: 5,
-					unsafe_arrows: true,
-				},
-				output: {
-					preamble: generateBanner(),
-				},
-				toplevel: true,
-			}),
-
-		babel({ extensions, include: ['src/**/*'] }),
+		terser({
+			ecma: 8,
+			compress: IS_PRODUCTION && {
+				passes: 5,
+				unsafe_arrows: true,
+			},
+			mangle: IS_PRODUCTION,
+			output: {
+				preamble: generateBanner(),
+			},
+			toplevel: true,
+		}),
 
 		string({
 			include: ['**/*.html'],
 		}),
 
-		process.env.BUILD === 'serve' &&
+		IS_SERVE &&
 			serve({
 				open: true,
 				openPage: `/${pkg.name}.user.js`,
@@ -51,12 +46,10 @@ export default {
 		postcss(),
 	],
 
+	inlineDynamicImports: true,
+
 	output: [
 		{
-			banner:
-				(process.env.BUILD === 'development' ||
-					process.env.BUILD === 'serve') &&
-				generateBanner(),
 			file: path.resolve(__dirname, 'dist', `${pkg.name}.user.js`),
 			format: 'es',
 		},
