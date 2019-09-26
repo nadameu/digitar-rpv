@@ -1,4 +1,5 @@
 import path from 'path';
+import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import serve from 'rollup-plugin-serve';
 import { string } from 'rollup-plugin-string';
@@ -18,6 +19,8 @@ export default {
 	external: [],
 
 	plugins: [
+		resolve(),
+
 		typescript(),
 
 		terser({
@@ -29,6 +32,7 @@ export default {
 			mangle: IS_PRODUCTION,
 			output: {
 				preamble: generateBanner(),
+				beautify: IS_DEVELOPMENT,
 			},
 			toplevel: true,
 		}),

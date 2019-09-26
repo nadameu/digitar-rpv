@@ -1,4 +1,7 @@
+import { State } from './State';
+
 const Type = {
+	ATUALIZAR_VALOR: 'ATUALIZAR_VALOR',
 	CHAVE_ALTERADA: 'CHAVE_ALTERADA',
 	ELEMENTO_ENCONTRADO: 'ELEMENTO_ENCONTRADO',
 	PREENCHER: 'PREENCHER',
@@ -14,6 +17,8 @@ const action = <Key extends Type, T>(type: Key, payload: T) => ({
 });
 
 export const Action = {
+	AtualizarValor: <Key extends keyof State>(campo: Key, valor: State[Key]) =>
+		action(Type.ATUALIZAR_VALOR, { campo, valor }),
 	ChaveAlterada: (valor: string) =>
 		action(Type.CHAVE_ALTERADA, { chave: valor }),
 	ElementoEncontrado: (nome: string, elemento: Element) =>

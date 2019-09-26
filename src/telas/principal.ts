@@ -2,7 +2,8 @@ import { Action, ActionType } from '../Actions';
 import { h } from '../h';
 import { State } from '../State';
 import { Store } from '../Store';
-import { query, sequenceObj, toPromise } from '../Validation';
+import { pipeValue, thrush, flip } from 'adt-ts';
+import { query } from '../query';
 
 export const telaPrincipal = async () => {
 	console.log('Tela principal');
@@ -32,10 +33,13 @@ export const telaPrincipal = async () => {
 		return result;
 	};
 	const store = new Store<State, Action>(
-		{ chave: '', elementos: {} },
+		{ chave: '', elementos: {}, valorTotal: 0 },
 		log(
 			handleActions((state, action) => {
 				switch (action.type) {
+					case ActionType.ATUALIZAR_VALOR:
+						return { ...state, [action.campo]: action.valor };
+
 					case ActionType.CHAVE_ALTERADA:
 						return { ...state, chave: action.chave };
 
@@ -52,26 +56,27 @@ export const telaPrincipal = async () => {
 		)
 	);
 
-	const elementos = sequenceObj({
-		txtNumProcesso: query<HTMLInputElement>('#txtNumProcesso'),
-		fldDadosReq: query<HTMLFieldSetElement>('#fldDadosReq'),
-		novoBeneficiario: query<HTMLAnchorElement>(
-			'#fldBeneficiarios > legend a.infraLegendObrigatorio[title="Novo Beneficiário"]'
-		),
-		novoHonorario: query<HTMLAnchorElement>(
-			'#fldHonorarios > legend a.infraLegendObrigatorio[title="Novo Honorário"]'
-		),
-		novoReembDeducao: query<HTMLAnchorElement>(
-			'#fldReembDeducoes > legend a.infraLegendObrigatorio[title="Novo Reembolso/Dedução"]'
-		),
+	window.addEventListener('message', ({ origin, data }) => {
+		if (origin !== document.location.origin) return;
+		store.dispatch(data);
 	});
-	const {
-		txtNumProcesso,
-		fldDadosReq,
-		novoBeneficiario,
-		novoHonorario,
-		novoReembDeducao,
-	} = await toPromise(elementos);
+
+	const q: <T extends Element>(selector: string) => Promise<T> = flip(query)(
+		document
+	);
+	const txtNumProcesso = await q<HTMLInputElement>('#txtNumProcesso');
+	const fldDadosReq = await q<HTMLFieldSetElement>('#fldDadosReq');
+	const novo = (idFieldset: string, titleLink: string) =>
+		`#${idFieldset} > legend a.infraLegendObrigatorio[title="${titleLink}"]`;
+	const novoBeneficiario = await q<HTMLAnchorElement>(
+		novo('fldBeneficiarios', 'Novo Beneficiário')
+	);
+	const novoHonorario = await q<HTMLAnchorElement>(
+		novo('fldHonorarios', 'Novo Honorário')
+	);
+	const novoReembDeducao = await q<HTMLAnchorElement>(
+		novo('fldReembDeducoes', 'Novo Reembolso/Dedução')
+	);
 
 	store.dispatch(Action.ElementoEncontrado('txtNumProcesso', txtNumProcesso));
 	store.dispatch(Action.ElementoEncontrado('fldDadosReq', fldDadosReq));

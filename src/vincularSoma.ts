@@ -1,22 +1,13 @@
+import { InputMoeda } from './corrigirCampoMoeda';
 import { arredondarMoeda, formatarMoeda } from './moeda';
 import obterValores from './obterValores';
 
 const vincularSoma = (
-	elementoPrincipal: HTMLInputElement,
-	elementoJuros: HTMLInputElement,
-	elementoTotal: HTMLInputElement
+	elementoTotal: InputMoeda,
+	[elementoPrincipal, elementoJuros]: [InputMoeda, InputMoeda]
 ) => {
 	const obterValoresElementos = () =>
 		obterValores([elementoPrincipal, elementoJuros, elementoTotal]);
-
-	const preencherAutomaticamente = () => {
-		const [principal, juros, total] = obterValoresElementos();
-		if (total && !principal) {
-			elementoPrincipal.value = formatarMoeda(arredondarMoeda(total - juros));
-		} else if (total && !juros) {
-			elementoJuros.value = formatarMoeda(arredondarMoeda(total - principal));
-		}
-	};
 
 	const validarSoma = () => {
 		const [principal, juros, total] = obterValoresElementos();
@@ -28,12 +19,28 @@ const vincularSoma = (
 	};
 
 	[elementoPrincipal, elementoJuros, elementoTotal].forEach(el =>
-		el.addEventListener('blur', () => {
-			preencherAutomaticamente();
-			validarSoma();
+		el.addEventListener('change', () => {
+			if (elementoTotal.value === '') {
+				elementoTotal.value = formatarMoeda(
+					elementoPrincipal.valueAsNumber + elementoJuros.valueAsNumber
+				);
+				elementoTotal.sanitizeInput();
+			}
+			if (elementoPrincipal.value === '') {
+				elementoPrincipal.value = formatarMoeda(
+					elementoTotal.valueAsNumber - elementoJuros.valueAsNumber
+				);
+				elementoPrincipal.sanitizeInput();
+			}
+			if (elementoJuros.value === '') {
+				elementoJuros.value = formatarMoeda(
+					elementoTotal.valueAsNumber - elementoPrincipal.valueAsNumber
+				);
+				elementoJuros.sanitizeInput();
+			}
 		})
 	);
 
-	validarSoma();
+	// validarSoma();
 };
 export default vincularSoma;
