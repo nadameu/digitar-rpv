@@ -1,46 +1,60 @@
 import { InputMoeda } from './corrigirCampoMoeda';
 import { arredondarMoeda, formatarMoeda } from './moeda';
-import obterValores from './obterValores';
 
 const vincularSoma = (
 	elementoTotal: InputMoeda,
 	[elementoPrincipal, elementoJuros]: [InputMoeda, InputMoeda]
 ) => {
-	const obterValoresElementos = () =>
-		obterValores([elementoPrincipal, elementoJuros, elementoTotal]);
+	const obterValores = () =>
+		[elementoTotal, elementoPrincipal, elementoJuros].map(x => x.valueAsNumber);
 
 	const validarSoma = () => {
-		const [principal, juros, total] = obterValoresElementos();
-		if (arredondarMoeda(principal + juros) !== total) {
-			elementoJuros.classList.add('gm-digitar-rpv__input_error');
+		const [total, principal, juros] = obterValores();
+		const soma = arredondarMoeda(principal + juros);
+		const mensagem = `O valor total (R$ ${formatarMoeda(
+			total
+		)}) deve corresponder à soma do principal + juros (R$ ${formatarMoeda(
+			principal + juros
+		)}).`;
+		if (total < soma) {
+			elementoTotal.setCustomValidity(mensagem);
+		} else if (soma === total) {
+			elementoTotal.setCustomValidity('');
+			elementoJuros.setCustomValidity('');
 		} else {
-			elementoJuros.classList.remove('gm-digitar-rpv__input_error');
+			elementoJuros.setCustomValidity(mensagem);
 		}
 	};
 
-	[elementoPrincipal, elementoJuros, elementoTotal].forEach(el =>
+	[elementoTotal, elementoPrincipal, elementoJuros].map(el => {
 		el.addEventListener('change', () => {
-			if (elementoTotal.value === '') {
-				elementoTotal.value = formatarMoeda(
-					elementoPrincipal.valueAsNumber + elementoJuros.valueAsNumber
-				);
-				elementoTotal.sanitizeInput();
-			}
-			if (elementoPrincipal.value === '') {
-				elementoPrincipal.value = formatarMoeda(
-					elementoTotal.valueAsNumber - elementoJuros.valueAsNumber
-				);
-				elementoPrincipal.sanitizeInput();
-			}
-			if (elementoJuros.value === '') {
-				elementoJuros.value = formatarMoeda(
-					elementoTotal.valueAsNumber - elementoPrincipal.valueAsNumber
-				);
-				elementoJuros.sanitizeInput();
-			}
-		})
-	);
+			const [total, principal, juros] = obterValores();
+			const estado = `${total > 0 ? 'T' : '_'}${principal > 0 ? 'P' : '_'}${
+				juros > 0 ? 'J' : '_'
+			}`;
+			switch (estado) {
+				case 'T__':
+					elementoPrincipal.valueAsNumber = total;
+					break;
 
-	// validarSoma();
+				case 'TP_':
+					if (principal > total) break;
+					elementoJuros.valueAsNumber = total - principal;
+					break;
+
+				case 'T_J':
+					if (juros > total) break;
+					elementoPrincipal.valueAsNumber = total - juros;
+					break;
+
+				case '_PJ':
+					elementoTotal.valueAsNumber = principal + juros;
+					break;
+			}
+			validarSoma();
+		});
+	});
+
+	validarSoma();
 };
 export default vincularSoma;

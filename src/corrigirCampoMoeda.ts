@@ -4,17 +4,16 @@ export class InputMoeda extends HTMLInputElement {
 	get valueAsNumber() {
 		return parseMoeda(this.value);
 	}
+	set valueAsNumber(value) {
+		this.value = formatarMoeda(value);
+	}
 
 	sanitizeInput() {
 		const text = this.value;
-		const num = Number(text.replace(/\D+/g, '')) / 100;
-		if (num === 0) {
-			this.value = '';
-			return;
-		}
-		const formatted = formatarMoeda(num);
 		const selection = this.selectionEnd;
-		this.value = formatted;
+		const num = Number(text.replace(/\D+/g, '')) / 100;
+		this.valueAsNumber = num;
+		const formatted = this.value;
 		if (selection == null) return;
 
 		let digitosDepoisDaSelecao = 0;
@@ -48,7 +47,7 @@ const dispararOnChangeComPrimeiroValor = (input: InputMoeda) => {
 			delete this.value;
 			this.value = value;
 			this.sanitizeInput();
-
+			console.log('primeiro', this.value, old);
 			if (this.value === old) return;
 
 			const evt = document.createEvent('Event');
@@ -63,14 +62,20 @@ const dispararOnChangeComPrimeiroValor = (input: InputMoeda) => {
 };
 
 export const corrigirCampoMoeda = (input: HTMLInputElement) => {
-	console.log('Primeiro valor:', input.value);
+	const modified = corrigirCampoMoedaSemAguardarPrimeiroValor(input);
+	dispararOnChangeComPrimeiroValor(modified);
+	return modified;
+};
+
+export const corrigirCampoMoedaSemAguardarPrimeiroValor = (
+	input: HTMLInputElement
+) => {
 	const modified: InputMoeda = Object.setPrototypeOf(
 		input,
 		InputMoeda.prototype
 	);
 	modified.removeAttribute('onkeypress');
-	modified.placeholder = '0,00';
 	modified.addEventListener('input', () => modified.sanitizeInput());
-	dispararOnChangeComPrimeiroValor(modified);
+	if (modified.value === '') modified.value = '0,00';
 	return modified;
 };

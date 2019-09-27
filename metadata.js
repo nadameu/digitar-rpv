@@ -3,9 +3,13 @@ const basePaths = [
 	'eproc.jfrs.jus.br/eprocV2',
 	'eproc.jfsc.jus.br/eprocV2',
 	'eproc.trf4.jus.br/eproc2trf4',
-	(process.env.BUILD === 'development' || process.env.BUILD === 'serve') &&
-		'homologa-1g1.trf4.jus.br/homologa_1g',
-].filter(/** @returns {x is string} */ x => x !== false);
+];
+
+const devPaths = [
+	'homologa-pr.trf4.jus.br/homologa_1g', // PR
+	'homologa-1g1.trf4.jus.br/homologa_1g', // RS
+	'homologa-sc.trf4.jus.br/homologa_1g', // SC
+];
 
 const acoes = [
 	'oficio_requisitorio_requisicoes_editar', // Tela principal
@@ -17,6 +21,10 @@ const match = [];
 for (const basePath of basePaths)
 	for (const acao of acoes)
 		match.push(`https://${basePath}/controlador.php?acao=${acao}&*`);
+if (process.env.BUILD === 'development' || process.env.BUILD === 'serve')
+	for (const devPath of devPaths)
+		for (const acao of acoes)
+			match.push(`*://${devPath}/controlador.php?acao=${acao}&*`);
 
 export default {
 	description: 'Auxilia a conferência de RPVs e precatórios.',
