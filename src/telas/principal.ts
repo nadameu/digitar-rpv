@@ -5,6 +5,7 @@ import {
 	matchDataBaseCelula,
 	matchNomeDocBeneficiarioCelulaHonorariosContratuais,
 	matchNomeDocumentoCelula,
+	matchQualquerCelula,
 	matchTextoNaoVazioCelula,
 	matchTipoEspecieCelula,
 	matchValoresCelula,
@@ -94,34 +95,82 @@ export const telaPrincipal = async () => {
 		selectorBotaoNovo('fldReembDeducoes', 'Novo Reembolso/Dedução')
 	);
 
-	// BENEFICIÁRIOS
-	const obterDadosLinhasBeneficiarios = () =>
-		Promise.all(
-			Array.from(
-				docQueryAll<HTMLTableRowElement>(
-					'#divConteudoBeneficiarios > table tr[class^="infraTr"]'
-				)
-			).map(async linha => {
-				if (linha.cells.length !== 5)
-					throw new Error('Formato de linha desconhecido');
-				const [nomeDoc, tipoEspecie, textoDataBase, valores] = linha.cells;
-				const { nome, doc } = await matchNomeDocumentoCelula(nomeDoc);
-				const { tipo, especie } = await matchTipoEspecieCelula(tipoEspecie);
-				const dataBase = await matchDataBaseCelula(textoDataBase);
-				const { total, principal, juros } = await matchValoresCelula(valores);
-				return {
-					nome,
-					doc,
-					tipo,
-					especie,
-					dataBase,
-					total,
-					principal,
-					juros,
-				};
-			})
+	type CellToPromise<T> = (_: HTMLTableCellElement) => Promise<T>;
+	type DadosLinhas<T> = Promise<{ [key in keyof T]: T[key] }[]>;
+	const obterDadosLinhas: {
+		<T>(divId: string, matchers: [CellToPromise<T>]): () => DadosLinhas<T>;
+		<T, U>(
+			divId: string,
+			matchers: [CellToPromise<T>, CellToPromise<U>]
+		): () => DadosLinhas<T & U>;
+		<T, U, V>(
+			divId: string,
+			matchers: [CellToPromise<T>, CellToPromise<U>, CellToPromise<V>]
+		): () => DadosLinhas<T & U & V>;
+		<T, U, V, W>(
+			divId: string,
+			matchers: [
+				CellToPromise<T>,
+				CellToPromise<U>,
+				CellToPromise<V>,
+				CellToPromise<W>
+			]
+		): () => DadosLinhas<T & U & V & W>;
+		<T, U, V, W, X>(
+			divId: string,
+			matchers: [
+				CellToPromise<T>,
+				CellToPromise<U>,
+				CellToPromise<V>,
+				CellToPromise<W>,
+				CellToPromise<X>
+			]
+		): () => DadosLinhas<T & U & V & W & X>;
+		<T, U, V, W, X, Y>(
+			divId: string,
+			matchers: [
+				CellToPromise<T>,
+				CellToPromise<U>,
+				CellToPromise<V>,
+				CellToPromise<W>,
+				CellToPromise<X>,
+				CellToPromise<Y>
+			]
+		): () => DadosLinhas<T & U & V & W & X & Y>;
+		<T = {}>(
+			divId: string,
+			matchers: Array<(_: HTMLTableCellElement) => Promise<Partial<T>>>
+		): () => DadosLinhas<T>;
+	} = <T = {}>(
+		divId: string,
+		matchers: Array<(_: HTMLTableCellElement) => Promise<Partial<T>>>
+	) => () => {
+		const linhas = docQueryAll<HTMLTableRowElement>(
+			`#${divId} > table tr[class^="infraTr"]`
 		);
+		const promises = linhas.map(async linha => {
+			if (linha.cells.length !== matchers.length)
+				throw new Error('Formato de linha desconhecido');
+			const result = ({} as unknown) as T;
+			for (let i = 0, len = matchers.length; i < len; i++) {
+				Object.assign(result, await matchers[i](linha.cells[i]));
+			}
+			return result;
+		});
+		return Promise.all(promises);
+	};
 
+	// BENEFICIÁRIOS
+	const obterDadosLinhasBeneficiarios = obterDadosLinhas(
+		'divConteudoBeneficiarios',
+		[
+			matchNomeDocumentoCelula,
+			matchTipoEspecieCelula,
+			matchDataBaseCelula,
+			matchValoresCelula,
+			matchQualquerCelula,
+		]
+	);
 	const divConteudoBeneficiarios = await docQuery<HTMLFieldSetElement>(
 		'#divConteudoBeneficiarios'
 	);
@@ -139,48 +188,13 @@ export const telaPrincipal = async () => {
 	);
 
 	// HONORÁRIOS
-	const obterDadosLinhasHonorarios = () =>
-		Promise.all(
-			Array.from(
-				docQueryAll<HTMLTableRowElement>(
-					'#divConteudoHonorarios > table tr[class^="infraTr"]'
-				)
-			).map(async linha => {
-				if (linha.cells.length !== 6)
-					throw new Error('Formato de linha desconhecido');
-				const [
-					nomeDoc,
-					tipoEspecie,
-					textoTipoHonorarios,
-					textoDataBase,
-					valores,
-				] = linha.cells;
-				const {
-					nome,
-					doc,
-					beneficiario,
-				} = await matchNomeDocBeneficiarioCelulaHonorariosContratuais(nomeDoc);
-				const { tipo, especie } = await matchTipoEspecieCelula(tipoEspecie);
-				const tipoHonorarios = await matchTextoNaoVazioCelula(
-					textoTipoHonorarios
-				);
-				const dataBase = await matchDataBaseCelula(textoDataBase);
-				const { total, principal, juros } = await matchValoresCelula(valores);
-				return {
-					nome,
-					doc,
-					beneficiario,
-					tipo,
-					especie,
-					tipoHonorarios,
-					dataBase,
-					total,
-					principal,
-					juros,
-				};
-			})
-		);
-
+	const obterDadosLinhasHonorarios = obterDadosLinhas('divConteudoHonorarios', [
+		matchNomeDocBeneficiarioCelulaHonorariosContratuais,
+		matchTipoEspecieCelula,
+		matchTextoNaoVazioCelula('tipoHonorarios'),
+		matchDataBaseCelula,
+		matchValoresCelula,
+	]);
 	const divConteudoHonorarios = await docQuery<HTMLFieldSetElement>(
 		'#divConteudoHonorarios'
 	);
@@ -198,31 +212,14 @@ export const telaPrincipal = async () => {
 	);
 
 	// REEMBOLSOS / DEDUÇÕES
-	const obterDadosLinhasReembDeducoes = () =>
-		Promise.all(
-			Array.from(
-				docQueryAll<HTMLTableRowElement>(
-					'#divConteudoReembDeducoes > table tr[class^="infraTr"]'
-				)
-			).map(async linha => {
-				if (linha.cells.length !== 4)
-					throw new Error('Formato de linha desconhecido');
-				const [textoTipoReembDeducao, textoDataBase, valores] = linha.cells;
-				const tipoReembDeducao = await matchTextoNaoVazioCelula(
-					textoTipoReembDeducao
-				);
-				const dataBase = await matchDataBaseCelula(textoDataBase);
-				const { total, principal, juros } = await matchValoresCelula(valores);
-				return {
-					tipoReembDeducao,
-					dataBase,
-					total,
-					principal,
-					juros,
-				};
-			})
-		);
-
+	const obterDadosLinhasReembDeducoes = obterDadosLinhas(
+		'divConteudoReembDeducoes',
+		[
+			matchTextoNaoVazioCelula('tipoReembDeducao'),
+			matchDataBaseCelula,
+			matchValoresCelula,
+		]
+	);
 	const divConteudoReembDeducoes = await docQuery<HTMLFieldSetElement>(
 		'#divConteudoReembDeducoes'
 	);

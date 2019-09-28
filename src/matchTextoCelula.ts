@@ -25,7 +25,7 @@ export const matchTipoEspecieCelula = (celula: HTMLTableCellElement) =>
 export const matchDataBaseCelula = (celula: HTMLTableCellElement) =>
 	matchTextoCelula(/^(\d{2})\/(\d{4})$/, 'Data base não encontrada.')(celula)
 		.then(xs => xs.map(Number))
-		.then(([, mes, ano]) => criarData(ano, mes, 1));
+		.then(([, mes, ano]) => ({ dataBase: criarData(ano, mes, 1) }));
 
 export const matchValoresCelula = (celula: HTMLTableCellElement) =>
 	matchTextoCelula(
@@ -45,8 +45,12 @@ export const matchValoresCelula = (celula: HTMLTableCellElement) =>
 		)
 		.then(([total, principal, juros]) => ({ total, principal, juros }));
 
-export const matchTextoNaoVazioCelula = (celula: HTMLTableCellElement) =>
-	matchTextoCelula(/^.+$/, 'Texto vazio.')(celula).then(([texto]) => texto);
+export const matchTextoNaoVazioCelula = <key extends string>(
+	campoResultado: key
+) => (celula: HTMLTableCellElement) =>
+	matchTextoCelula(/^.+$/, 'Texto vazio.')(celula).then(
+		([texto]) => ({ [campoResultado]: texto } as { [k in key]: string })
+	);
 
 export const matchNomeDocBeneficiarioCelulaHonorariosContratuais = (
 	celula: HTMLTableCellElement
@@ -61,3 +65,6 @@ export const matchNomeDocBeneficiarioCelulaHonorariosContratuais = (
 			beneficiario,
 		}))
 		.catch(() => matchNomeDocumentoCelula(celula));
+
+export const matchQualquerCelula = (_: HTMLTableCellElement) =>
+	Promise.resolve({});
