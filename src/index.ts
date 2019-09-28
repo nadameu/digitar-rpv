@@ -1,21 +1,17 @@
-import { telaBeneficiarios } from './telas/beneficiarios';
-import { telaPrincipal } from './telas/principal';
-import { telaReembolsos } from './telas/reembolsos';
-
 const main = async () => {
 	const acao = new URL(document.location.href).searchParams.get('acao');
 	switch (acao) {
 		case 'oficio_requisitorio_requisicoes_editar':
 			// Tela principal
-			return telaPrincipal();
+			return (await import('./telas/principal')).telaPrincipal();
 
 		case 'oficio_requisitorio_beneficiarioshonorarios_editar':
 			// Edição de beneficiário ou honorário
-			return telaBeneficiarios();
+			return (await import('./telas/beneficiarios')).telaBeneficiarios();
 
 		case 'oficio_requisitorio_reembdeducoes_editar':
 			// Edição de reembolsos ou deduções
-			return telaReembolsos();
+			return (await import('./telas/reembolsos')).telaReembolsos();
 
 		default:
 			return Promise.reject(new Error(`Ação desconhecida: ${acao}`));
