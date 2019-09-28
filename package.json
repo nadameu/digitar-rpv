@@ -16,10 +16,7 @@
 		"type-check": "tsc",
 		"type-check:watch": "npm run type-check -- --watch"
 	},
-	"dependencies": {
-		"adt-ts": "^0.3.0",
-		"intl": "^1.2.5"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@types/intl": "^1.2.0",
 		"@types/jest": "^24.0.18",
