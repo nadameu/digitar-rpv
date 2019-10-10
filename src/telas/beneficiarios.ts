@@ -15,27 +15,21 @@ export const telaBeneficiarios = async () => {
 		elemento: eltLiquidoTotal,
 	} = await observarCampoMoeda('#txtValorTotal', valor => {
 		liquidoTotal = valor;
-		dispatch(Action.AtualizarValor('liquidoTotal', liquidoTotal));
 	});
-	dispatch(Action.AtualizarValor('liquidoTotal', liquidoTotal));
 
 	let {
 		valor: liquidoPrincipal,
 		elemento: eltLiquidoPrincipal,
 	} = await observarCampoMoeda('#txtValorPrincipal', valor => {
 		liquidoPrincipal = valor;
-		dispatch(Action.AtualizarValor('liquidoPrincipal', liquidoPrincipal));
 	});
-	dispatch(Action.AtualizarValor('liquidoPrincipal', liquidoPrincipal));
 
 	let {
 		valor: liquidoJuros,
 		elemento: eltLiquidoJuros,
 	} = await observarCampoMoeda('#txtValorJuros', valor => {
 		liquidoJuros = valor;
-		dispatch(Action.AtualizarValor('liquidoJuros', liquidoJuros));
 	});
-	dispatch(Action.AtualizarValor('liquidoJuros', liquidoJuros));
 
 	vincularSoma(eltLiquidoTotal, [eltLiquidoPrincipal, eltLiquidoJuros]);
 
@@ -43,28 +37,22 @@ export const telaBeneficiarios = async () => {
 		'#txtValorBruto',
 		valor => {
 			brutoTotal = valor;
-			dispatch(Action.AtualizarValor('brutoTotal', brutoTotal));
 		}
 	);
-	dispatch(Action.AtualizarValor('brutoTotal', brutoTotal));
 
 	let {
 		valor: brutoPrincipal,
 		elemento: eltBrutoPrincipal,
 	} = await observarCampoMoeda('#txtValorBrutoPrincipal', valor => {
 		brutoPrincipal = valor;
-		dispatch(Action.AtualizarValor('brutoPrincipal', brutoPrincipal));
 	});
-	dispatch(Action.AtualizarValor('brutoPrincipal', brutoPrincipal));
 
 	let { valor: brutoJuros, elemento: eltBrutoJuros } = await observarCampoMoeda(
 		'#txtValorBrutoJurosSelic',
 		valor => {
 			brutoJuros = valor;
-			dispatch(Action.AtualizarValor('brutoJuros', brutoJuros));
 		}
 	);
-	dispatch(Action.AtualizarValor('brutoJuros', brutoJuros));
 
 	vincularSoma(eltBrutoTotal, [eltBrutoPrincipal, eltBrutoJuros]);
 

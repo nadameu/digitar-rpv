@@ -14,14 +14,23 @@ import { obterDadosLinhas } from '../obterDadosLinhas';
 import { docQuery } from '../query';
 import { State } from '../State';
 import { Store } from '../Store';
+import { Just } from '../Maybe';
+import { Right, Left } from '../Either';
+import {
+	dividirString,
+	dividirStringMoeda,
+	dividirStringHex,
+} from '../dividirString';
+import { dataExcel } from '../dataExcel';
+import { parseChave } from '../parseChave';
+
+type Reducer = (state: State, action: Action) => State;
+type Transducer = (next: Reducer) => Reducer;
 
 export const telaPrincipal = async () => {
 	console.log('Tela principal');
 
-	const handleActions = (next: (state: State, action: Action) => State) => (
-		state: State,
-		action: Action
-	): State => {
+	const handleActions: Transducer = next => (state, action) => {
 		switch (action.type) {
 			case ActionType.PREENCHER:
 				(state.elementos.novoBeneficiario as HTMLInputElement).click();
@@ -30,10 +39,7 @@ export const telaPrincipal = async () => {
 				return next(state, action);
 		}
 	};
-	const log = (next: (state: State, action: Action) => State) => (
-		state: State,
-		action: Action
-	): State => {
+	const log: Transducer = next => (state, action) => {
 		console.group('Digitar RPV');
 		console.log('State:', state);
 		console.log('Action:', action);
@@ -41,6 +47,21 @@ export const telaPrincipal = async () => {
 		console.log('New state:', result);
 		console.groupEnd();
 		return result;
+	};
+	const reducer: Reducer = (state, action) => {
+		switch (action.type) {
+			case ActionType.ATUALIZAR_VALOR:
+				return { ...state, [action.campo]: action.valor };
+			case ActionType.CHAVE_ALTERADA:
+				return { ...state, chave: action.chave };
+			case ActionType.ELEMENTO_ENCONTRADO:
+				return {
+					...state,
+					elementos: { ...state.elementos, [action.nome]: action.elemento },
+				};
+			default:
+				return state;
+		}
 	};
 	const store = new Store<State, Action>(
 		{
@@ -53,26 +74,7 @@ export const telaPrincipal = async () => {
 			brutoPrincipal: 0,
 			brutoJuros: 0,
 		},
-		log(
-			handleActions((state, action) => {
-				switch (action.type) {
-					case ActionType.ATUALIZAR_VALOR:
-						return { ...state, [action.campo]: action.valor };
-
-					case ActionType.CHAVE_ALTERADA:
-						return { ...state, chave: action.chave };
-
-					case ActionType.ELEMENTO_ENCONTRADO:
-						return {
-							...state,
-							elementos: { ...state.elementos, [action.nome]: action.elemento },
-						};
-
-					default:
-						return state;
-				}
-			})
-		)
+		log(handleActions(reducer))
 	);
 
 	window.addEventListener('message', ({ origin, data }) => {
@@ -174,27 +176,23 @@ export const telaPrincipal = async () => {
 
 	const frag = document.createDocumentFragment();
 	const chave = h('input', {
-		id: 'gm-paulo',
+		id: 'gm-chave',
 		value:
-			'01265298050032AA6000AA7F002A66900042CC40000000800037D6000005B01000001E0000BB8000005DD0003B92',
+			'000961500613CA93A000AA7F109016301A17D7400000008015CFEC000005B01000001E00493E000024A95017456A',
 	});
-	const preencher = h('button', { type: 'button' }, ['Preencher']);
 	frag.append(
 		h('br'),
-		h('label', { for: 'gm-paulo' }, ['Chave']),
+		h('label', { for: 'gm-chave' }, ['Chave']),
 		chave,
-		preencher,
 		h('br')
 	);
 	chave.addEventListener('change', () => {
-		store.dispatch(Action.ChaveAlterada(chave.value));
+		try {
+			let current = parseChave(chave.value.trim());
+			console.log(current);
+		} catch (err) {
+			console.error(err);
+		}
 	});
-	preencher.addEventListener('click', evt => {
-		evt.preventDefault();
-		store.dispatch(Action.Preencher());
-	});
-
 	fldDadosReq.parentNode!.insertBefore(frag, fldDadosReq.nextSibling);
-
-	store.dispatch(Action.ChaveAlterada(chave.value)); // Remover em produção
 };

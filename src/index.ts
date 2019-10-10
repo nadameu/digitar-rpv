@@ -14,7 +14,7 @@ const main = async () => {
 			return (await import('./telas/reembolsos')).telaReembolsos();
 
 		default:
-			return Promise.reject(new Error(`Ação desconhecida: ${acao}`));
+			return Promise.reject(new Error(`Ação desconhecida: "${acao}".`));
 	}
 };
 
