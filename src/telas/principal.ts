@@ -132,6 +132,7 @@ export const telaPrincipal = async () => {
 		matchTextoNaoVazioCelula('tipoHonorarios'),
 		matchDataBaseCelula,
 		matchValoresCelula,
+		matchQualquerCelula,
 	]);
 	const divConteudoHonorarios = await docQuery<HTMLFieldSetElement>(
 		'#divConteudoHonorarios'
@@ -156,6 +157,7 @@ export const telaPrincipal = async () => {
 			matchTextoNaoVazioCelula('tipoReembDeducao'),
 			matchDataBaseCelula,
 			matchValoresCelula,
+			matchQualquerCelula,
 		]
 	);
 	const divConteudoReembDeducoes = await docQuery<HTMLFieldSetElement>(
