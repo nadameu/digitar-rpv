@@ -11,18 +11,11 @@ import {
 	matchValoresCelula,
 } from '../matchTextoCelula';
 import { obterDadosLinhas } from '../obterDadosLinhas';
+import { parseChave } from '../parseChave';
 import { docQuery } from '../query';
 import { State } from '../State';
 import { Store } from '../Store';
-import { Just } from '../Maybe';
-import { Right, Left } from '../Either';
-import {
-	dividirString,
-	dividirStringMoeda,
-	dividirStringHex,
-} from '../dividirString';
-import { dataExcel } from '../dataExcel';
-import { parseChave } from '../parseChave';
+import { ouvirMensagemMesmaOrigem } from '../ouvirMensagemMesmaOrigem';
 
 type Reducer = (state: State, action: Action) => State;
 type Transducer = (next: Reducer) => Reducer;
@@ -77,10 +70,7 @@ export const telaPrincipal = async () => {
 		log(handleActions(reducer))
 	);
 
-	window.addEventListener('message', ({ origin, data }) => {
-		if (origin !== document.location.origin) return;
-		store.dispatch(data);
-	});
+	ouvirMensagemMesmaOrigem(store.dispatch);
 
 	const txtNumProcesso = await docQuery<HTMLInputElement>('#txtNumProcesso');
 

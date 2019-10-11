@@ -1,14 +1,15 @@
 import { Action } from '../Actions';
+import { corrigirCampoMoedaSemAguardarPrimeiroValor } from '../corrigirCampoMoeda';
+import { enviarMensagemMesmaOrigem } from '../enviarMensagemMesmaOrigem';
 import { observarCampoMoeda } from '../observarCampoMoeda';
+import { docQuery } from '../query';
 import { vincularAlteracoes } from '../vincularAlteracoes';
 import vincularSoma from '../vincularSoma';
-import { docQuery } from '../query';
-import { corrigirCampoMoedaSemAguardarPrimeiroValor } from '../corrigirCampoMoeda';
 
 export const telaBeneficiarios = async () => {
-	const dispatch = (action: Action) => {
-		window.parent.postMessage(action, document.location.origin);
-	};
+	const dispatch: (action: Action) => void = enviarMensagemMesmaOrigem(
+		window.parent
+	);
 
 	let {
 		valor: liquidoTotal,
