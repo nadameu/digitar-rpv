@@ -1,3 +1,3 @@
-export const enviarMensagemMesmaOrigem = (janela: Window) => (
+export const enviarMensagemMesmaOrigem = (destino: Window) => (
 	data: any
-): void => janela.postMessage(data, document.location.origin);
+): void => destino.postMessage(data, document.location.origin);

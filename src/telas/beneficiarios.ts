@@ -1,13 +1,14 @@
-import { Action } from '../Actions';
+import { PREENCHER_BENEFICIARIO } from '../Constantes';
 import { corrigirCampoMoedaSemAguardarPrimeiroValor } from '../corrigirCampoMoeda';
 import { enviarMensagemMesmaOrigem } from '../enviarMensagemMesmaOrigem';
 import { observarCampoMoeda } from '../observarCampoMoeda';
+import { ouvirMensagemMesmaOrigem } from '../ouvirMensagemMesmaOrigem';
 import { docQuery } from '../query';
 import { vincularAlteracoes } from '../vincularAlteracoes';
 import vincularSoma from '../vincularSoma';
 
 export const telaBeneficiarios = async () => {
-	const dispatch: (action: Action) => void = enviarMensagemMesmaOrigem(
+	const dispatch: (action: any) => void = enviarMensagemMesmaOrigem(
 		window.parent
 	);
 
@@ -74,4 +75,11 @@ export const telaBeneficiarios = async () => {
 	).map(corrigirCampoMoedaSemAguardarPrimeiroValor);
 
 	vincularSoma(eltHonTotal, [eltHonPrincipal, eltHonJuros]);
+
+	const pararDeOuvir = ouvirMensagemMesmaOrigem((data, source) => {
+		console.log('Mensagem recebida', data);
+	});
+
+	console.log('Enviando mensagem');
+	dispatch({ type: PREENCHER_BENEFICIARIO });
 };

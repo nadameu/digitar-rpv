@@ -16,6 +16,8 @@ import { docQuery } from '../query';
 import { State } from '../State';
 import { Store } from '../Store';
 import { ouvirMensagemMesmaOrigem } from '../ouvirMensagemMesmaOrigem';
+import { PREENCHER_BENEFICIARIO } from '../Constantes';
+import { enviarMensagemMesmaOrigem } from '../enviarMensagemMesmaOrigem';
 
 type Reducer = (state: State, action: Action) => State;
 type Transducer = (next: Reducer) => Reducer;
@@ -23,6 +25,7 @@ type Transducer = (next: Reducer) => Reducer;
 export const telaPrincipal = async () => {
 	console.log('Tela principal');
 
+	//#region Gerenciamento de estado
 	const handleActions: Transducer = next => (state, action) => {
 		switch (action.type) {
 			case ActionType.PREENCHER:
@@ -72,6 +75,8 @@ export const telaPrincipal = async () => {
 
 	ouvirMensagemMesmaOrigem(store.dispatch);
 
+	//#endregion
+
 	const txtNumProcesso = await docQuery<HTMLInputElement>('#txtNumProcesso');
 
 	const fldDadosReq = await docQuery<HTMLFieldSetElement>('#fldDadosReq');
@@ -88,7 +93,7 @@ export const telaPrincipal = async () => {
 		selectorBotaoNovo('fldReembDeducoes', 'Novo Reembolso/Dedução')
 	);
 
-	// BENEFICIÁRIOS
+	//#region BENEFICIÁRIOS
 	const obterDadosLinhasBeneficiarios = obterDadosLinhas(
 		'divConteudoBeneficiarios',
 		[
@@ -115,7 +120,9 @@ export const telaPrincipal = async () => {
 			})
 	);
 
-	// HONORÁRIOS
+	//#endregion
+
+	//#region HONORÁRIOS
 	const obterDadosLinhasHonorarios = obterDadosLinhas('divConteudoHonorarios', [
 		matchNomeDocBeneficiarioCelulaHonorariosContratuais,
 		matchTipoEspecieCelula,
@@ -140,7 +147,9 @@ export const telaPrincipal = async () => {
 			})
 	);
 
-	// REEMBOLSOS / DEDUÇÕES
+	//#endregion
+
+	//#region REEMBOLSOS / DEDUÇÕES
 	const obterDadosLinhasReembDeducoes = obterDadosLinhas(
 		'divConteudoReembDeducoes',
 		[
@@ -166,24 +175,75 @@ export const telaPrincipal = async () => {
 			})
 	);
 
+	//#endregion
+
 	const frag = document.createDocumentFragment();
 	const chave = h('input', {
 		id: 'gm-chave',
 		value:
 			'000961500613CA93A000AA7F109016301A17D7400000008015CFEC000005B01000001E00493E000024A95017456A',
+		pattern: '\\s*[0-9A-Fa-f]{92}\\s*',
 	});
+	const listaAcoes = h('div', { id: 'gm-output' });
 	frag.append(
 		h('br'),
 		h('label', { for: 'gm-chave' }, ['Chave']),
 		chave,
-		h('br')
+		h('br'),
+		listaAcoes
 	);
+	chave.addEventListener('input', () => {
+		while (listaAcoes.hasChildNodes())
+			listaAcoes.removeChild(listaAcoes.firstChild!);
+	});
 	chave.addEventListener('change', () => {
 		try {
-			let current = parseChave(chave.value.trim());
-			console.log(current);
+			if (!chave.validity.valid) return;
+			let dadosChave = parseChave(chave.value.trim());
+			console.log(dadosChave);
+			const seq = dadosChave.numproc.slice(0, 8);
+			const subsecao = dadosChave.numproc.slice(8);
+			const comparacao = `5${seq}____404__${subsecao}`;
+			const numproc = txtNumProcesso.value;
+			const corresponde = comparacao
+				.split('')
+				.every((x, i) => x === '_' || numproc[i] === x);
+			if (!corresponde)
+				throw new Error(
+					`Chave não corresponde ao processo atual: "${comparacao}".`
+				);
+
+			const acoes: HTMLButtonElement[] = [];
+			const cadastrarBeneficiario = h('button', { type: 'button' }, [
+				dadosChave.contratuais.isJust
+					? 'Cadastrar beneficiário e honorários contratuais'
+					: 'Cadastrar beneficiário',
+			]);
+			cadastrarBeneficiario.addEventListener('click', () => {
+				const deixarDeOuvir = ouvirMensagemMesmaOrigem((msg, origem) => {
+					if (!origem) return;
+					if (msg && msg.type === PREENCHER_BENEFICIARIO) {
+						console.log('Mensagem recebida.');
+						deixarDeOuvir();
+						listaAcoes.removeChild(cadastrarBeneficiario.parentNode!);
+						console.log('Respondendo');
+						enviarMensagemMesmaOrigem(origem)(dadosChave);
+						console.log('Respondido.');
+					}
+				});
+				novoBeneficiario.click();
+			});
+			acoes.push(cadastrarBeneficiario);
+			if (dadosChave.sucumbenciais.isJust) {
+				const cadastrarSucumbenciais = h('button', { type: 'button' }, [
+					'Cadastrar honorários sucumbenciais',
+				]);
+				acoes.push(cadastrarSucumbenciais);
+			}
+			listaAcoes.append(...acoes.map(x => h('p', null, [x])));
 		} catch (err) {
 			console.error(err);
+			alert(err.message);
 		}
 	});
 	fldDadosReq.parentNode!.insertBefore(frag, fldDadosReq.nextSibling);
