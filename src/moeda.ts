@@ -24,8 +24,7 @@ const agruparDigitos = (texto: string): string => {
 };
 
 export const formatarMoeda = (valor: number) => {
-	let texto = String(toCentavos(valor));
-	while (texto.length < 3) texto = `0${texto}`;
-	const [reais, centavos] = splitEnd(texto, 2);
+	let texto = valor.toFixed(2);
+	const [reais, centavos] = texto.split('.');
 	return `${agruparDigitos(reais)},${centavos}`;
 };
