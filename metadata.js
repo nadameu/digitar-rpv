@@ -9,6 +9,7 @@ const devPaths = [
 	'homologa-pr.trf4.jus.br/homologa_1g', // PR
 	'homologa-1g1.trf4.jus.br/homologa_1g', // RS
 	'homologa-sc.trf4.jus.br/homologa_1g', // SC
+	'eproc-1g-develop.trf4.jus.br/eprocv2_pmj', // DEVELOP
 ];
 
 const acoes = [
