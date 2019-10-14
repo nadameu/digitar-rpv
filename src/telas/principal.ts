@@ -73,7 +73,7 @@ export const telaPrincipal = async () => {
 		log(handleActions(reducer))
 	);
 
-	ouvirMensagemMesmaOrigem(store.dispatch);
+	ouvirMensagemMesmaOrigem(x => store.dispatch(x));
 
 	//#endregion
 
