@@ -6,6 +6,13 @@ import { ouvirMensagemMesmaOrigem } from '../ouvirMensagemMesmaOrigem';
 import { docQuery } from '../query';
 import { vincularAlteracoes } from '../vincularAlteracoes';
 import vincularSoma from '../vincularSoma';
+import { DadosChave } from '../Chave';
+import { formatarMoeda } from '../moeda';
+import { formatarDataBase } from '../formatarDataBase';
+import { preencherInput } from '../preencherInput';
+
+declare function trataIrraSimNao(): void;
+declare function trataHonDestac(): void;
 
 export const telaBeneficiarios = async () => {
 	const dispatch: (action: any) => void = enviarMensagemMesmaOrigem(
@@ -76,9 +83,90 @@ export const telaBeneficiarios = async () => {
 
 	vincularSoma(eltHonTotal, [eltHonPrincipal, eltHonJuros]);
 
-	const pararDeOuvir = ouvirMensagemMesmaOrigem((data, source) => {
-		console.log('Mensagem recebida', data);
-	});
+	const hdnIdRequisicao = await docQuery<HTMLInputElement>(
+		'#id_requisicao_beneficiario'
+	);
+	const ehRequisicaoNova = hdnIdRequisicao.value === '';
+
+	if (!ehRequisicaoNova) return;
+
+	const pararDeOuvir = ouvirMensagemMesmaOrigem((data, source) =>
+		(async () => {
+			console.log('Mensagem recebida', data);
+			const dadosChave = data as DadosChave;
+
+			await preencherInput('txtDtaBase', formatarDataBase(dadosChave.dataBase));
+			await preencherInput('selTipoJurosMora', dadosChave.tipoJurosMora);
+
+			if (dadosChave.contratuais.isJust) {
+				const link = await docQuery<HTMLAnchorElement>('showCalculosBenefi');
+				link.click();
+				eltBrutoPrincipal.valueAsNumber = dadosChave.principalBen;
+				eltBrutoJuros.valueAsNumber = dadosChave.jurosBen;
+				eltBrutoTotal.valueAsNumber =
+					dadosChave.principalBen + dadosChave.jurosBen;
+
+				switch (dadosChave.contratuais.value.contratuais) {
+					case '%': {
+						await preencherInput(
+							'txtPercentualContratual',
+							formatarMoeda(dadosChave.contratuais.value.pctContratuais)
+						);
+						break;
+					}
+
+					case '$': {
+						await preencherInput(
+							'txtMinimoContratual',
+							formatarMoeda(dadosChave.contratuais.value.minContratuais)
+						);
+						break;
+					}
+				}
+
+				await preencherInput('selHonDestac', 'S');
+			} else {
+				eltLiquidoPrincipal.valueAsNumber = dadosChave.principalBen;
+				eltLiquidoJuros.valueAsNumber = dadosChave.jurosBen;
+				eltLiquidoTotal.valueAsNumber =
+					dadosChave.principalBen + dadosChave.jurosBen;
+				await preencherInput('selHonDestac', 'N');
+				trataHonDestac();
+			}
+
+			const selIrra = await docQuery<HTMLSelectElement>('#selIrra');
+			if (dadosChave.rra.isJust) {
+				selIrra.value = 'S';
+				trataIrraSimNao();
+
+				await preencherInput(
+					'txtNumMesesExCorrente',
+					dadosChave.rra.value.mesesCorrente.toString()
+				);
+				await preencherInput(
+					'txtValorExCorrente',
+					formatarMoeda(dadosChave.rra.value.valorCorrente)
+				);
+				await preencherInput(
+					'txtNumMesesExAnterior',
+					dadosChave.rra.value.mesesAnteriores.toString()
+				);
+				await preencherInput(
+					'txtValorExAnterior',
+					formatarMoeda(
+						dadosChave.principalBen +
+							dadosChave.jurosBen -
+							dadosChave.rra.value.valorCorrente
+					)
+				);
+			} else {
+				selIrra.value = 'N';
+				trataIrraSimNao();
+			}
+		})().catch(err => {
+			console.error(err);
+		})
+	);
 
 	console.log('Enviando mensagem');
 	dispatch({ type: PREENCHER_BENEFICIARIO });

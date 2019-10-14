@@ -181,7 +181,7 @@ export const telaPrincipal = async () => {
 	const chave = h('input', {
 		id: 'gm-chave',
 		value:
-			'000961500613CA93A000AA7F109016301A17D7400000008015CFEC000005B01000001E00493E000024A95017456A',
+			'000365710913CA93A000AA7F109016301A17D7400000008015CFEC000005B01000001E00493E000024A95017456A',
 		pattern: '\\s*[0-9A-Fa-f]{92}\\s*',
 	});
 	const listaAcoes = h('div', { id: 'gm-output' });
