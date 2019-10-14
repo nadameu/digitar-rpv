@@ -50,7 +50,7 @@ export const parseChave = (chave: string): DadosChave => {
 	const txtTipoContratuais = lerEnum('0', '1', '2');
 	if (contratuais && txtTipoContratuais === '0')
 		throw new Error('Tipo de honorários contratuais não especificado.');
-	const valorContratuais = lerMoeda();
+	const valorContratuais = lerHex();
 	const minimoContratuais = lerMoeda();
 	const dadosContratuais: DadosHonContratuais = contratuais
 		? Just(
