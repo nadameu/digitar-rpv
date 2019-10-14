@@ -99,7 +99,7 @@ export const telaBeneficiarios = async () => {
 			await preencherInput('selTipoJurosMora', dadosChave.tipoJurosMora);
 
 			if (dadosChave.contratuais.isJust) {
-				const link = await docQuery<HTMLAnchorElement>('showCalculosBenefi');
+				const link = await docQuery<HTMLAnchorElement>('#showCalculosBenefi');
 				link.click();
 				eltBrutoPrincipal.valueAsNumber = dadosChave.principalBen;
 				eltBrutoJuros.valueAsNumber = dadosChave.jurosBen;
